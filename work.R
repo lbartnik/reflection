@@ -9,7 +9,9 @@ if (FALSE) {
   a <- array(as.double(1:9), c(3, 3))
   a
   reflection:::unwrap_array(a)
-  unwrap_image(load.image("tests/testthat/roc.png"))
+
+  o <- unwrap_image(load.image("tests/testthat/roc.png"), 0.01, 1)
+  display(o)
 }
 
 if (FALSE) {

@@ -7,11 +7,11 @@
 
 #include <assert.h>
 
-SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR);
+SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR, SEXP _missing);
 static int is_single_numeric(SEXP _obj);
 
 static const R_CallMethodDef callMethods[]  = {
-  { "C_unwrap_array", (DL_FUNC) &C_unwrap_array, 3 },
+  { "C_unwrap_array", (DL_FUNC) &C_unwrap_array, 5 },
   { NULL, NULL, 0 }
 };
 
@@ -20,7 +20,7 @@ void R_init_subprocess(DllInfo* info) {
   R_useDynamicSymbols(info, TRUE);
 }
 
-SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
+SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR, SEXP _missing) {
   if (!isArray(_array) || !isReal(_array)) {
     Rf_error("`_array` has to be a two-dimensional numeric array");
   }
@@ -41,11 +41,15 @@ SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
   if (!is_single_numeric(_dR)) {
     Rf_error("`_dR` needs to be a single numeric value");
   }
+  if (!is_single_numeric(_missing)) {
+    Rf_error("`_missing` needs to be a single numeric value");
+  }
 
   double * array = NUMERIC_DATA(_array);
   double dAlpha = NUMERIC_DATA(_dAlpha)[0];
   double rMax = NUMERIC_DATA(_rMax)[0];
   double dR = NUMERIC_DATA(_dR)[0];
+  double missing = NUMERIC_DATA(_missing)[0];
 
   int iCols = Rf_ncols(_array);
   int iRows = Rf_nrows(_array);
@@ -73,7 +77,7 @@ SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
 //        printf(" = %f\n", value);
         output[oRow + oCol * oRows] = value;
       } else {
-        output[oRow + oCol * oRows] = 0;
+        output[oRow + oCol * oRows] = missing;
 //        printf(" out-of-bound\n");
       }
     }
