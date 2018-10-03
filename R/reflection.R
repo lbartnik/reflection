@@ -1,3 +1,6 @@
+#' @useDynLib reflection, .registration = TRUE
+NULL
+
 #' @name reflection
 #' @title Reflect the History of an Artifact
 #' @description Matches the contents of a file against a repository of

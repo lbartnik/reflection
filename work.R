@@ -6,6 +6,10 @@ library(glue)
 devtools::load_all(".")
 
 if (FALSE) {
+  unwrap_image(load.image("tests/testthat/roc.png"))
+}
+
+if (FALSE) {
   r <- sample_repository()
 
   roc_plot <- load.image("tests/testthat/roc.png")

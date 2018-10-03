@@ -19,6 +19,7 @@ Suggests:
   testthat
 Collate:
   'identify.R'
+  'images.R'
   'reflection.R'
 Remotes:
   lbartnik/repository,
