@@ -12,7 +12,6 @@ test_that("unwrap array", {
   expect_equal(unwrap_array(inp), exp)
 })
 
-
 test_that("unwrap array", {
   exp <- array(c(5, 8, 0,
                  5, 4, 7,

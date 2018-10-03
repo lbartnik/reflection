@@ -58,16 +58,16 @@ SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
 
   // iterate over alpha and r
   double alpha = 0;
-  for (int oCol = 0; oCol <= oCols; ++oCol, alpha += dAlpha) {
+  for (int oCol = 0; oCol < oCols; ++oCol, alpha += dAlpha) {
     assert(alpha <= M_PI * 2);
     double cosAlpha = cos(alpha), sinAlpha = sin(alpha);
 
-    for (int oRow = 0; oRow < oRows; ++oRow) {
-      double r = (oRow * rMax) / oRows;
+    double r = 0;
+    for (int oRow = 0; oRow < oRows; ++oRow, r += dR) {
       int iCol = iCols/2 + cosAlpha * r,
           iRow = iRows/2 - sinAlpha * r;
 
-//      printf("(r = %f, alpha = %f) -> array[%d, %d]", r, alpha, iRow, iCol);
+//      printf("output[%d, %d] -> (%f, %f) -> array[%d, %d]", oRow, oCol, alpha, r, iRow, iCol);
       if (0 <= iCol && iCol < iCols && 0 <= iRow && iRow < iRows) {
         double value = array[iRow + iCol * iRows];
 //        printf(" = %f\n", value);
