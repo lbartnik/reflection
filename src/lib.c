@@ -2,13 +2,14 @@
 
 #include <R.h>
 #include <Rinternals.h>
+#include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 
-SEXP C_unwrap_image (SEXP);
+SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR);
 static int is_single_numeric(SEXP _obj);
 
 static const R_CallMethodDef callMethods[]  = {
-  { "C_unwrap_image", (DL_FUNC) &C_unwrap_image, 3 },
+  { "C_unwrap_array", (DL_FUNC) &C_unwrap_array, 3 },
   { NULL, NULL, 0 }
 };
 
@@ -17,7 +18,7 @@ void R_init_subprocess(DllInfo* info) {
   R_useDynamicSymbols(info, TRUE);
 }
 
-SEXP C_unwrap_image (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
+SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
   if (!isArray(_array) || !isReal(_array)) {
     Rf_error("`_array` has to be a two-dimensional numeric array");
   }
@@ -47,20 +48,25 @@ SEXP C_unwrap_image (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
   int cols = Rf_ncols(_array);
   int rows = Rf_nrows(_array);
 
-  // iterate over alpha and r
-  for (double alpha = 0; alpha <= 2*M_PI; alpha += dAlpha) {
-    double cosAlpha = cos(alpha);
-    double sinAlpha = sin(alpha);
+  int oCols = rMax/dR, oRows = 2*M_PI/dAlpha;
+  SEXP ans = PROTECT(allocMatrix(REALSXP, oCols, oRows));
+  double * output = NUMERIC_DATA(ans);
 
-    for (double r = 0; r <= rMax; r += dR) {
-      int col = cols/2 + cosAlpha * r;
-      int row = rows/2 + sinAlpha * r;
-      array[col + row * cols];
+  // iterate over alpha and r
+  for (int oCol = 0; oCol <= oCols; ++oCol) {
+    double alpha = (M_PI * 2 * oCol) / oCols;
+    double cosAlpha = cos(alpha), sinAlpha = sin(alpha);
+
+    for (int oRow = 0; oRow < oRows; ++oRow) {
+      double r = (oRow * rMax) / oRows;
+      int col = cols/2 + cosAlpha * r,
+          row = rows/2 + sinAlpha * r;
+      output[oCol + oRow * oCols] = array[col + row * cols];
     }
   }
 
-
-  return R_NilValue;
+  UNPROTECT(1);
+  return ans;
 }
 
 

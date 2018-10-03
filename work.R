@@ -6,6 +6,7 @@ library(glue)
 devtools::load_all(".")
 
 if (FALSE) {
+
   unwrap_image(load.image("tests/testthat/roc.png"))
 }
 
