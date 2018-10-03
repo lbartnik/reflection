@@ -5,6 +5,8 @@
 #include <Rdefines.h>
 #include <R_ext/Rdynload.h>
 
+#include <assert.h>
+
 SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR);
 static int is_single_numeric(SEXP _obj);
 
@@ -45,23 +47,35 @@ SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR) {
   double rMax = NUMERIC_DATA(_rMax)[0];
   double dR = NUMERIC_DATA(_dR)[0];
 
-  int cols = Rf_ncols(_array);
-  int rows = Rf_nrows(_array);
+  int iCols = Rf_ncols(_array);
+  int iRows = Rf_nrows(_array);
 
-  int oCols = rMax/dR, oRows = 2*M_PI/dAlpha;
-  SEXP ans = PROTECT(allocMatrix(REALSXP, oCols, oRows));
+  int oRows = rMax/dR, oCols = 2*M_PI/dAlpha;
+//  printf("oRows = %d, oCols = %d\n", oRows, oCols);
+
+  SEXP ans = PROTECT(allocMatrix(REALSXP, oRows, oCols));
   double * output = NUMERIC_DATA(ans);
 
   // iterate over alpha and r
-  for (int oCol = 0; oCol <= oCols; ++oCol) {
-    double alpha = (M_PI * 2 * oCol) / oCols;
+  double alpha = 0;
+  for (int oCol = 0; oCol <= oCols; ++oCol, alpha += dAlpha) {
+    assert(alpha <= M_PI * 2);
     double cosAlpha = cos(alpha), sinAlpha = sin(alpha);
 
     for (int oRow = 0; oRow < oRows; ++oRow) {
       double r = (oRow * rMax) / oRows;
-      int col = cols/2 + cosAlpha * r,
-          row = rows/2 + sinAlpha * r;
-      output[oCol + oRow * oCols] = array[col + row * cols];
+      int iCol = iCols/2 + cosAlpha * r,
+          iRow = iRows/2 - sinAlpha * r;
+
+//      printf("(r = %f, alpha = %f) -> array[%d, %d]", r, alpha, iRow, iCol);
+      if (0 <= iCol && iCol < iCols && 0 <= iRow && iRow < iRows) {
+        double value = array[iRow + iCol * iRows];
+//        printf(" = %f\n", value);
+        output[oRow + oCol * oRows] = value;
+      } else {
+        output[oRow + oCol * oRows] = 0;
+//        printf(" out-of-bound\n");
+      }
     }
   }
 

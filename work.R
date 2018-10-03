@@ -6,7 +6,9 @@ library(glue)
 devtools::load_all(".")
 
 if (FALSE) {
-
+  a <- array(as.double(1:4), c(2, 2))
+  a
+  unwrap_array(a)
   unwrap_image(load.image("tests/testthat/roc.png"))
 }
 
