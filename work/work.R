@@ -6,13 +6,51 @@ library(glue)
 devtools::load_all(".")
 
 if (FALSE) {
+  aid <- '0f1105f2e5992669196384b0a66536ef7dfc4111'
+  as_artifacts(sample_repository()) %>% filter(id == aid) %>% read_artifacts %>% first
+}
+
+
+if (FALSE) {
   a <- array(as.double(1:9), c(3, 3))
   a
   reflection:::unwrap_array(a)
 
   o <- unwrap_image(load.image("tests/testthat/roc.png"), 0.01, 1)
-  display(o)
+
+  r <- sample_repository()
+  p1 <- unwrap_image(load_plot('0f1105f2e5992669196384b0a66536ef7dfc4111')$image, 0.01, 1)
+  p2 <- unwrap_image(load_plot('909a1c6d8e6fc025fe34f8ed33f908889a6a108d')$image, 0.01, 1)
+
+  o <- crop.bbox(o, bbox(o < .95))
+  p1 <- crop.bbox(p1, bbox(p1 < .95))
+  p2 <- crop.bbox(p2, bbox(p2 < .95))
+
+  w <- max(unlist(lapply(list(o, p1, p2), function (p) dim(p)[1])))
+  h <- max(unlist(lapply(list(o, p1, p2), function (p) dim(p)[2])))
+
+  imgs <- lapply(list(o, p1, p2), function(p) resize(p, w, h))
+
+  arrays <- lapply(imgs, function (x) isoblur(x, sigma = 5) %>% as.array %>% as.numeric)
+  cor(arrays[[1]], arrays[[2]])
+  cor(arrays[[1]], arrays[[3]])
 }
+
+load_array <- function (path) {
+  a <- as.array(squeeze(grayscale(load.image(path))))
+  unwrap_array(a, 0.01, 1, missing = 1)
+}
+
+if (FALSE) {
+  r <- sample_repository()
+
+  o <- load_array("tests/testthat/roc.png")
+  p1 <- load_array('work/p1.png')
+  p2 <- load_array('work/p2.png')
+
+  cor(as.numeric(o), as.numeric(p1))
+}
+
 
 if (FALSE) {
   r <- sample_repository()
