@@ -8,10 +8,13 @@
 #include <assert.h>
 
 SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR, SEXP _missing);
+SEXP C_cdf_diff (SEXP _x, SEXP _y);
 static int is_single_numeric(SEXP _obj);
+static int is_numeric (SEXP _obj);
 
 static const R_CallMethodDef callMethods[]  = {
   { "C_unwrap_array", (DL_FUNC) &C_unwrap_array, 5 },
+  { "C_cdf_diff",     (DL_FUNC) &C_cdf_diff, 2 },
   { NULL, NULL, 0 }
 };
 
@@ -87,7 +90,47 @@ SEXP C_unwrap_array (SEXP _array, SEXP _dAlpha, SEXP _rMax, SEXP _dR, SEXP _miss
   return ans;
 }
 
+SEXP C_cdf_diff (SEXP _x, SEXP _y) {
+  if (!is_numeric(_x)) {
+    Rf_error("`_x` needs to be a single numeric value");
+  }
+  if (!is_numeric(_y)) {
+    Rf_error("`_y` needs to be a single numeric value");
+  }
+
+  int lx = LENGTH(_x), ly = LENGTH(_y);
+  double * x = NUMERIC_DATA(_x), * y = NUMERIC_DATA(_y);
+  double * px = x, * py = y, * ex = x+lx, * ey = y+ly,
+           vx = 0, vy = 0, cx = 0, diff = 0;
+
+  while (px < ex && py < ey) {
+    // 1. find the next point to measure cdf against: either px or py
+    // 2. delta is the area between this new point and values of both cdfs
+    if (*px < *py) {
+      double delta = (*px - cx) * fabs(vx - vy);
+      diff += delta;
+      cx = *px;
+      ++px;
+      vx += 1.0/lx;
+    } else {
+      double delta = (*py - cx) * fabs(vx - vy);
+      diff += delta;
+      cx = *py;
+      ++py;
+      vy += 1.0/ly;
+    }
+  }
+
+  // account for the last step, either px or py still have one to go
+  return R_NilValue;
+}
+
+
 
 static int is_single_numeric (SEXP _obj) {
   return isReal(_obj) && (LENGTH(_obj) == 1);
+}
+
+static int is_numeric (SEXP _obj) {
+  return isReal(_obj);
 }

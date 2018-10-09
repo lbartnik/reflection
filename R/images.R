@@ -15,3 +15,7 @@ unwrap_array <- function (x, dAlpha = 1, dR = 1, rMax = NULL, missing = 0) {
   rMax <- ceiling(sqrt(sum((dim(x)/2)**2)))
   .Call("C_unwrap_array", x, as.numeric(dAlpha), as.numeric(rMax), as.numeric(dR), as.numeric(missing))
 }
+
+cdf_diff <- function (x, y) {
+  .Call("C_cdf_diff", as.numeric(x), as.numeric(y))
+}
