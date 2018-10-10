@@ -1,55 +1,3 @@
-#' @importFrom rlang UQ
-#' @export
-identify_object <- function (obj, repo) {
-  id <- storage::compute_id(obj)
-  q  <- as_artifacts(repo) %>% filter(id == UQ(id))
-
-  ans <- q %>% summarise(n = n()) %>% first
-
-  if (!ans) {
-    warn("cannot match object in repository")
-    return(NULL)
-  }
-
-  read_artifacts(q)
-}
-
-#' @importFrom png readPNG
-#' @importFrom jsonlite base64_dec
-#' @importFrom imager is.cimg
-identify_image <- function (img, repo) {
-  stopifnot(is.cimg(img))
-  stopifnot(is_repository(repo))
-
-  arts <- as_artifacts(repo) %>% filter('plot' %in% class) %>% read_artifacts
-
-  new <- unwrap_image(img, 0.01, 1)
-
-  known <- arts %>% lapply(function (a) {
-    png <- readPNG(base64_dec(artifact_data(a)$png))
-    img <- png_as_cimg(png)
-    unwrap_image(img, 0.01, 1)
-  })
-
-  dists <- map_dbl(known, function (known) image_dist(known, new))
-  i <- which.min(dists)
-
-  nth(arts, i)
-}
-
-#' @importFrom imager cimg mirror imrotate
-png_as_cimg <- function (raw) {
-  if (length(dim(raw)) == 3) {
-    dim(raw) <- c(dim(raw)[1:2], 1, dim(raw)[3])
-  } else {
-    dim(raw) <- c(dim(raw), 1, 1)
-  }
-  cimg(raw) %>% mirror("x") %>% imrotate(-90)
-}
-
-
-
-
 #' @export
 identify_file <- function (path, repo) {
   stopifnot(file.exists(path))
@@ -107,6 +55,57 @@ identify_file_impl.rdata <- function (x, repo, ...) {
 }
 
 #' @importFrom imager load.image
-identify_file_impl.png <- function (x, repo, ...) {
-  identify_image(load.image(x$path), repo)
+identify_file_impl.jpg <- identify_file_impl.png <- function (x, repo, ...) {
+  identify_plot(load.image(x$path), repo)
+}
+
+
+#' @importFrom rlang UQ
+#' @export
+identify_object <- function (obj, repo) {
+  id <- storage::compute_id(obj)
+  q  <- as_artifacts(repo) %>% filter(id == UQ(id))
+
+  ans <- q %>% summarise(n = n()) %>% first
+
+  if (!ans) {
+    warn("cannot match object in repository")
+    return(NULL)
+  }
+
+  read_artifacts(q)
+}
+
+
+#' @importFrom png readPNG
+#' @importFrom jsonlite base64_dec
+#' @importFrom imager is.cimg
+identify_plot <- function (img, repo) {
+  stopifnot(is.cimg(img))
+  stopifnot(is_repository(repo))
+
+  arts <- as_artifacts(repo) %>% filter('plot' %in% class) %>% read_artifacts
+
+  new <- unwrap_image(img, 0.01, 1)
+
+  known <- arts %>% lapply(function (a) {
+    png <- readPNG(base64_dec(artifact_data(a)$png))
+    img <- png_as_cimg(png)
+    unwrap_image(img, 0.01, 1)
+  })
+
+  dists <- map_dbl(known, function (known) image_dist(known, new))
+  i <- which.min(dists)
+
+  nth(arts, i)
+}
+
+#' @importFrom imager cimg mirror imrotate
+png_as_cimg <- function (raw) {
+  if (length(dim(raw)) == 3) {
+    dim(raw) <- c(dim(raw)[1:2], 1, dim(raw)[3])
+  } else {
+    dim(raw) <- c(dim(raw), 1, 1)
+  }
+  cimg(raw) %>% mirror("x") %>% imrotate(-90)
 }
