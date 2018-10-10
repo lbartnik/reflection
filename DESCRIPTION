@@ -12,6 +12,8 @@ Encoding: UTF-8
 Imports:
     glue,
     imager,
+    jsonlite,
+    png,
     repository,
     rlang,
     utilities

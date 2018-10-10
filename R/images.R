@@ -16,7 +16,7 @@
 #' @param dR Step for the distance `r`.
 #' @param missing The value for pixels outside of `x`.
 #'
-#' @importFrom imager is.cimg grayscale squeeze
+#' @importFrom imager as.cimg is.cimg grayscale squeeze
 #' @export
 unwrap_image <- function (x, dAlpha = 1, dR = 1, missing = 1) {
   stopifnot(is.cimg(x))
@@ -82,7 +82,7 @@ image_dist <- function (a, b, cutoff = .5) {
   }
 
   to_distances <- function (x) {
-    x <- as_grayscale %>% imgradient(x, "xy") %>% enorm %>% as.array
+    x <- as_grayscale(x) %>% imgradient("xy") %>% enorm %>% as.array
     apply(x > quantile(as.numeric(x), cutoff), 1, function (c) which(c)/length(c))
   }
 
