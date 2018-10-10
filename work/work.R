@@ -130,5 +130,4 @@ edge_diff <- function (a, b) {
     sum(abs(ecdf(a)(x) - ecdf(b)(x)) * dx)
   }, SIMPLIFY = FALSE)
   sum(unlist(diffs))
-
 }
