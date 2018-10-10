@@ -8,7 +8,9 @@ library(tibble)
 devtools::load_all(".")
 
 if (FALSE) {
-  search:::cdf_diff(1, 2)
+  r <- sample_repository()
+  a <- as_artifacts(r) %>% filter(id == '0f1105f2e5992669196384b0a66536ef7dfc4111') %>% read_artifacts %>% first
+  d <- artifact_data(a)
 }
 
 if (FALSE) {
@@ -27,7 +29,7 @@ if (FALSE) {
   h <- unwrap_image(load_plot(s, 'fb79a00868474d6371201271065cd30877e65d03')$image, 0.01, 1)
 
   imgs <- list(x, a, b, c, d, e, f, g, h)
-  dists <- combn(imgs, 2, function(pair) edge_diff(first(pair), second(pair)))
+  dists <- combn(imgs, 2, function(pair) compare_images(first(pair), second(pair)))
   distm <- matrix(NA, length(imgs), length(imgs))
   apply(rbind(combn(seq(length(imgs)), 2), dists), 2, function (x) {
     distm[x[1], x[2]] <<- x[3]

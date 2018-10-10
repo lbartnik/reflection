@@ -17,7 +17,7 @@ unwrap_array <- function (x, dAlpha = 1, dR = 1, rMax = NULL, missing = 0) {
 
 
 #' @export
-compare_images <- function (a, b, cutoff = .5) {
+image_dist <- function (a, b, cutoff = .5) {
   stopifnot(is.cimg(a), is.cimg(b))
 
   as_grayscale <- function (img) {
