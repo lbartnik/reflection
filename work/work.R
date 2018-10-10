@@ -8,6 +8,10 @@ library(tibble)
 devtools::load_all(".")
 
 if (FALSE) {
+  search:::cdf_diff(1, 2)
+}
+
+if (FALSE) {
   x <- unwrap_image(load.image("tests/testthat/roc.png"), 0.01, 1)
 
   r <- sample_repository()

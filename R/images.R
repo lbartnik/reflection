@@ -17,5 +17,5 @@ unwrap_array <- function (x, dAlpha = 1, dR = 1, rMax = NULL, missing = 0) {
 }
 
 cdf_diff <- function (x, y) {
-  .Call("C_cdf_diff", as.numeric(x), as.numeric(y))
+  .Call("C_cdf_diff", sort(as.numeric(x)), sort(as.numeric(y)))
 }
