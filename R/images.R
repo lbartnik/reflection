@@ -82,8 +82,10 @@ image_dist <- function (a, b, cutoff = .5) {
   }
 
   to_distances <- function (x) {
-    x <- as_grayscale(x) %>% imgradient("xy") %>% enorm %>% as.array
-    apply(x > quantile(as.numeric(x), cutoff), 1, function (c) which(c)/length(c))
+    # only edges are interesting
+    x <- as_grayscale(x) %>% imgradient("xy") %>% enorm %>% cannyEdges %>% as.array
+    # account for varying number of rows (distance in polar coordinates)
+    apply(x, 1, function (c) which(c)/length(c))
   }
 
   diffs <- Map(cdf_diff, to_distances(a), to_distances(b))
