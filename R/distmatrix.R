@@ -1,21 +1,24 @@
 #' @importFrom png readPNG
+#' @importFrom rlang is_character
 #' @export
 distmatrix <- function (...) {
   images <- lapply(list(...), function (item) {
     if (is_repository(item)) {
       return(dump_plots(item))
     }
-    if (is_character(item) && file.exists(item)) {
-      return(list(prepare_png(readPNG(item), basename(item))))
+    if (is_character(item) && all(file.exists(item))) {
+      return(lapply(item, function (file) prepare_png(readPNG(file), basename(file))))
     }
     abort("do not know how to handle {item}")
   })
-  unlist(images, recursive = FALSE)
+  images <- unlist(images, recursive = FALSE)
+
+  compute_matrix(images)
 }
 
-compute_matrix <- function (images) {
+compute_matrix <- function (images, dist = image_dist) {
   unwrapped <- lapply(images, function (img) unwrap_image(img$image, 0.01, 1))
-  dists <- combn(unwrapped, 2, function(pair) image_dist(first(pair), second(pair), .95))
+  dists <- combn(unwrapped, 2, function(pair) dist(first(pair), second(pair), .95))
 
   distm <- matrix("", length(unwrapped), length(unwrapped))
 
@@ -27,9 +30,11 @@ compute_matrix <- function (images) {
 
   distm <- as.data.frame(distm)
   rownames(distm) <- names(distm) <- basename(map_chr(images, `[[`, 'path'))
+
+  distm
 }
 
-#' @importFrom imager save.image mirror imrotate cimg
+#' @importFrom imager save.image mirror imrotate cimg resize
 #' @importFrom tools file_path_sans_ext
 prepare_png <- function (raw_png, file_name) {
   if (length(dim(raw_png)) == 3) {

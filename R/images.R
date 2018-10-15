@@ -64,7 +64,7 @@ unwrap_array <- function (x, dAlpha = 1, dR = 1, rMax = NULL, missing = 0) {
 #' @param cutoff The cut-off quantile for gradient values.
 #' @return Cumulative area between _ecdf_s for all pairs of columns.
 #'
-#' @importFrom imager is.cimg grayscale squeeze enorm imgradient
+#' @importFrom imager is.cimg grayscale squeeze enorm imgradient cannyEdges
 #' @export
 #'
 #' @examples
@@ -85,14 +85,18 @@ image_dist <- function (a, b, cutoff = .5) {
     # only edges are interesting
     x <- as_grayscale(x) %>% imgradient("xy") %>% enorm %>% cannyEdges %>% as.array
     # account for varying number of rows (distance in polar coordinates)
-    apply(x, 1, function (c) which(c)/length(c))
+    apply(x, 1, function (c) which(c)/max(c))
   }
 
-  diffs <- Map(cdf_diff, to_distances(a), to_distances(b))
+  diffs <- Map(cdf_max, to_distances(a), to_distances(b))
   sum(unlist(diffs))
 }
 
 
-cdf_diff <- function (x, y) {
-  .Call("C_cdf_diff", sort(as.numeric(x)), sort(as.numeric(y)))
+cdf_area <- function (x, y) {
+  .Call("C_cdf_area", sort(as.numeric(x)), sort(as.numeric(y)))
+}
+
+cdf_max <- function (x, y) {
+  .Call("C_cdf_max", sort(as.numeric(x)), sort(as.numeric(y)))
 }
