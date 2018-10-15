@@ -88,7 +88,7 @@ image_dist <- function (a, b, cutoff = .5) {
     apply(x, 1, function (c) which(c)/max(c))
   }
 
-  diffs <- Map(cdf_max, to_distances(a), to_distances(b))
+  diffs <- Map(cdf_area, to_distances(a), to_distances(b))
   sum(unlist(diffs))
 }
 
