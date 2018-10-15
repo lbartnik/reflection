@@ -1,4 +1,4 @@
 library(imager)
 library(reflection)
 
-unwrap_image(load.image("tests/testthat/roc.png"))
+unwrap_image(load.image("tests/testthat/roc-linux.png"))
