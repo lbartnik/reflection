@@ -29,5 +29,6 @@ Remotes:
   lbartnik/repository,
   lbartnik/utilities
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.0
 Roxygen: list(markdown = TRUE)
