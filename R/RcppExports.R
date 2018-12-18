@@ -13,3 +13,7 @@ cdf_max <- function(a, b) {
     .Call(`_search_cdf_max`, a, b)
 }
 
+edit_dist_impl <- function(x, y) {
+    .Call(`_search_edit_dist_impl`, x, y)
+}
+

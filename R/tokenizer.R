@@ -11,13 +11,12 @@ tokenize <- function(x) {
   tokens <- sourcetools::tokenize_string(x)
   nws <- (tokens$type != "whitespace")
 
-  tokens$value[nws]
+  as_tokens(tokens$value[nws])
 }
-
-
 
 
 edit_dist <- function (a, b) {
   stopifnot(is_tokens(a), is_tokens(b))
+  edit_dist_impl(a, b)
 }
 

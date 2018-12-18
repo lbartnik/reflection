@@ -44,11 +44,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// edit_dist_impl
+size_t edit_dist_impl(const CharacterVector& x, const CharacterVector& y);
+RcppExport SEXP _search_edit_dist_impl(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const CharacterVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(edit_dist_impl(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_search_unwrap_array_impl", (DL_FUNC) &_search_unwrap_array_impl, 5},
     {"_search_cdf_area", (DL_FUNC) &_search_cdf_area, 2},
     {"_search_cdf_max", (DL_FUNC) &_search_cdf_max, 2},
+    {"_search_edit_dist_impl", (DL_FUNC) &_search_edit_dist_impl, 2},
     {NULL, NULL, 0}
 };
 
