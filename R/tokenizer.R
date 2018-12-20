@@ -15,7 +15,15 @@ NULL
 #' @importFrom rlang is_symbolic
 tokenize <- function(x) {
   stop_if_no_sourcetools()
-  if (is_symbolic(x)) x <- deparse(x)
+
+  if (is.expression(x)) {
+    x <- lapply(x, I)
+    if (length(x) > 1) abort("Cannot handle more than one expression at a time.")
+    x <- first(x)
+  }
+
+  if (is_symbolic(x)) x <- paste(deparse(x), collapse = '\n')
+
   if (!is.character(x)) {
     abort(glue("Cannot tokenize object of class {first(class(x))}. Pass R expression or a character string."))
   }
