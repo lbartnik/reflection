@@ -40,5 +40,10 @@ test_that("can identify plot", {
 
 test_that("can identify expression", {
   x <- identify_expression("virginica$predict <- predict(m, virginica)", iris_model())
-  expect_equal(toString(first(x)$id), "3b9c6d54")
+  expect_length(x, 3)
+  expect_s3_class(x, 'container')
+
+  x <- first(x)
+  expect_equal(toString(x$id), "3b9c6d54")
+  expect_equal(x$dist, 0)
 })

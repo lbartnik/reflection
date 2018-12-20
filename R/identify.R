@@ -23,7 +23,7 @@ identify_file <- function (path, repo) {
 }
 
 
-#' `identify_object` finds artifacts matching a given R object.
+#' @description `identify_object` finds artifacts matching a given R object.
 #' @param obj any R object.
 #'
 #' @export
@@ -44,8 +44,10 @@ identify_object <- function (obj, repo) {
 }
 
 
-#' `identify_expression` finds artifacts created with an expression
-#' matching the one passed as argument.
+#' @description `identify_expression` finds artifacts created with an
+#' expression matching the one passed as argument. Each artifact is
+#' assigned an additional attribute, `dist`, which holds the edit
+#' distance to the expression `expr`.
 #'
 #' @param expr expression to match against; as returned by [base::bquote] or
 #'        [base::deparse].
@@ -62,10 +64,16 @@ identify_expression <- function (expr, repo, n = 3) {
   dist <- map_dbl(artf, function (a) edit_dist(expr, tokenize(a$expression)))
   fnd  <- head(order(dist, decreasing = FALSE), n)
 
+  artf <- lapply(fnd, function (i) {
+    a <- artf[[i]]
+    a$dist <- dist[[i]]
+    a
+  })
+
   # TODO here maybe something smart? like, the first n artifacts that are
   #      also distinct given the distribution of dinstances?
 
-  as_container(artf[fnd])
+  as_container(artf)
 }
 
 

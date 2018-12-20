@@ -33,4 +33,11 @@ Each function returns a \code{list} of artifacts (see
 \description{
 \code{identify_file} finds artifacts matching the contents of
 a given file: plot, data set (\code{csv}) or an R object (\code{rds} or \code{RData}).
+
+\code{identify_object} finds artifacts matching a given R object.
+
+\code{identify_expression} finds artifacts created with an
+expression matching the one passed as argument. Each artifact is
+assigned an additional attribute, \code{dist}, which holds the edit
+distance to the expression \code{expr}.
 }
