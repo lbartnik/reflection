@@ -52,6 +52,7 @@ identify_object <- function (obj, repo) {
 #' @param n return that many closest matches given the edit distance (see
 #'        [edit_dist]).
 #'
+#' @export
 #' @rdname identify_artifacts
 #' @importFrom utils head
 identify_expression <- function (expr, repo, n = 3) {

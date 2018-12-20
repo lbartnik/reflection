@@ -3,6 +3,7 @@
 export(bind_images)
 export(compute_matrix)
 export(create_miniature)
+export(identify_expression)
 export(identify_file)
 export(identify_object)
 export(image_dist)
