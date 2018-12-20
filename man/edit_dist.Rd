@@ -22,5 +22,7 @@ Calculates edit distance at the level of R tokens. See
 \link[sourcetools:tokenize_string]{sourcetools::tokenize_string} for details on tokenizer.
 }
 \examples{
-edit_dist(bquote(x <- 1), bquote(y <- 1))
+\dontrun{
+edit_dist(tokenize(bquote(x <- 1)), tokenize(bquote(y <- 1)))
+}
 }

@@ -42,7 +42,9 @@ is_tokens <- function (x) inherits(x, 'tokens')
 #' @rdname edit_dist
 #'
 #' @examples
-#' edit_dist(bquote(x <- 1), bquote(y <- 1))
+#' \dontrun{
+#' edit_dist(tokenize(bquote(x <- 1)), tokenize(bquote(y <- 1)))
+#' }
 edit_dist <- function (a, b) {
   stopifnot(is_tokens(a), is_tokens(b))
   edit_dist_impl(a, b)
