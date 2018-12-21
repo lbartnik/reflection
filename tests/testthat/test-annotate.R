@@ -1,4 +1,4 @@
-context("tokens")
+context("annotate")
 
 test_that("basic edit dist", {
   expect_equal(edit_dist_impl("a", "a"), 0)
@@ -20,3 +20,19 @@ test_that("edit dist on tokens", {
   expect_equal(x, 1)
 })
 
+test_that("expressions can be annotated", {
+  a <- annotate_expressions(sample_expressions(), iris_model(), 3)
+
+  expect_true(is.list(a))
+  expect_length(a, 8)
+  expect_equal(map_int(a, length), c(0, 1, 1, 1, 1, 1, 1, 1))
+  lapply(a[2:8], function (ants) {
+    expect_equal(first(ants)$dist, 0)
+  })
+})
+
+test_that("file can be annotated", {
+  expr <- annotate_file(sample_script(), iris_model())
+  expect_s3_class(expr, 'expression')
+  expect_s3_class(expr, 'annotated')
+})
