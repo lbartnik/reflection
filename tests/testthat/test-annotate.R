@@ -1,11 +1,15 @@
 context("annotate")
 
 test_that("basic edit dist", {
-  expect_equal(edit_dist_impl("a", "a"), 0)
-  expect_equal(edit_dist_impl("a", "b"), 1)
-  expect_equal(edit_dist_impl("a", c("a", "b")), 1)
-  expect_equal(edit_dist_impl(c("a", "c"), c("a", "b")), 1)
-  expect_equal(edit_dist_impl(c("b", "c"), c("a", "b")), 2)
+  expect_ed <- function (a, b, d) {
+    expect_equal(edit_dist(as_tokens(a),as_tokens(b)), d)
+  }
+
+  expect_ed("a", "a", 0)
+  expect_ed("a", "b", 1)
+  expect_ed("a", c("a", "b"), 1)
+  expect_ed(c("a", "c"), c("a", "b"), 1)
+  expect_ed(c("b", "c"), c("a", "b"), 2)
 })
 
 test_that("tokenize", {
@@ -18,6 +22,10 @@ test_that("tokenize", {
 test_that("edit dist on tokens", {
   x <- edit_dist(tokenize("x <- 1"), tokenize("y <- 1"))
   expect_equal(x, 1)
+})
+
+test_that("expressions can be matched", {
+  match_expressions(sample_expressions(), iris_model(), 3)
 })
 
 test_that("expressions can be annotated", {
