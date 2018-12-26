@@ -29,7 +29,7 @@ test_that("expressions can be matched", {
 })
 
 test_that("expressions can be annotated", {
-  a <- annotate_expressions(sample_expressions(), iris_model(), 3)
+  a <- match_expressions(sample_expressions(), iris_model(), 3)
 
   expect_true(is.list(a))
   expect_length(a, 8)
@@ -43,4 +43,10 @@ test_that("file can be annotated", {
   expr <- annotate_file(sample_script(), iris_model())
   expect_s3_class(expr, 'expression')
   expect_s3_class(expr, 'annotated')
+
+  artref <- attr(expr, 'artref')
+  expect_true(is.list(artref))
+
+  # sanity check; should be exactly as the value in the test above
+  expect_equal(map_int(artref, length), c(0, 1, 1, 1, 1, 1, 1, 1))
 })
